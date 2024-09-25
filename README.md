@@ -1,4 +1,4 @@
-# Pathfinding Visualizer 🎨💻
+# Pathfinding Visualizer 🧭💻
 
 Questo progetto è stato sviluppato per esercitarsi con **Python** e **Pygame**. L'obiettivo è visualizzare in modo interattivo e animato la generazione di un labirinto e la ricerca di un percorso attraverso di esso.
 
