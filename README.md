@@ -12,10 +12,10 @@ Segui questi passaggi per avviare il progetto sul tuo computer:
     git clone https://github.com/gioele-ferrari/pathfinding-visualizer.git
     ```
 
-2. **Installa Pygame**: Assicurati di avere Pygame installato. Puoi farlo utilizzando pip:
+2. **Installa le librerie**: Assicurati di avere le librerie installate. Puoi farlo utilizzando pip:
 
     ```bash
-    pip install pygame
+    pip install -r requirements. txt
     ```
 
 3. **Esegui il progetto**: Avvia il file `main.py` con il seguente comando:
@@ -32,11 +32,6 @@ Segui questi passaggi per avviare il progetto sul tuo computer:
 2. Clicca con il tasto destro del mouse per impostare il punto di arrivo.
 3. Premi la barra spaziatrice per avviare la ricerca del percorso.
 4. Puoi vedere il labirinto generato e il percorso trovato visivamente sullo schermo.
-
-## 🔧 Funzionalità future
-
-- Migliorare l'algoritmo di ricerca per rendere la visualizzazione più efficiente.
-- Aggiungere diversi algoritmi di pathfinding (es. A*, Dijkstra).
 
 ## 📋 Note
 
