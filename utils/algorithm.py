@@ -16,6 +16,7 @@ def bfs(queue, path, start_box, target_box):
 
     return False
 
+
 def dfs(queue, path, start_box, target_box):
     if len(queue) > 0:
         current_box = queue.pop()

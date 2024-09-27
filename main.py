@@ -1,6 +1,7 @@
 import pygame
 import sys
-from algorithm import bfs, dfs
+from utils.algorithm import bfs
+from utils.colors import *
 
 window_width = 700
 window_height = 500
@@ -13,8 +14,6 @@ rows = 25
 
 box_width = window_width // columns
 box_height = window_height // rows
-
-global grid, queue, path
 
 grid = []
 queue = []
@@ -31,11 +30,12 @@ class Cell:
         self.visited = False
         self.neighbours = []
         self.father = None
+        self.cost = 0
 
     def draw(self, window, color):
         pygame.draw.rect(window, color, (self.x * box_width, self.y * box_height, box_width - 2, box_height - 2))
 
-    def set_neighbours(self):
+    def set_neighbours(self, grid):
         if self.x > 0:
             self.neighbours.append(grid[self.x - 1][self.y])
         if self.x < columns - 1:
@@ -46,38 +46,35 @@ class Cell:
             self.neighbours.append(grid[self.x][self.y + 1])
 
 
-def update_grid():
+def update_cell_color():
     for x in range(columns):
         for y in range(rows):
             box = grid[x][y]
-            box.draw(window, (44, 62, 80)) # Grigio
-            
+            box.draw(window, GREY_COLOR)
+
             if box.queued:
-                box.draw(window, (171, 235, 198)) # Verde chiaro 
+                box.draw(window, LIGHT_GREEN_COLOR)
             if box.visited:
-                box.draw(window, (40, 180, 99)) # Verde
-            
+                box.draw(window, GREEN_COLOR)
             if box.start:
-                box.draw(window, (52, 152, 219)) # Azzurro
+                box.draw(window, BLUE_COLOR)
             if box.wall:
-                box.draw(window, (28, 40, 51)) # Grigio scuro
+                box.draw(window, DARK_GREY_COLOR)
             if box.target:
-                box.draw(window, (231, 76, 60)) # Rosso
-
+                box.draw(window, RED_COLOR)
             if box in path:
-                box.draw(window, (244, 208, 63)) # Giallo
+                box.draw(window, YELLOW_COLOR)
 
 
-# Setup della griglia
-for x in range(columns):
-    arr = []
-    for y in range(rows):
-        arr.append(Cell(x, y))
-    grid.append(arr)
+def initialize_grid():
+    global grid
+    grid = [[Cell(x, y) for y in range(rows)] for x in range(columns)]
+    for x in range(columns):
+        for y in range(rows):
+            grid[x][y].set_neighbours(grid)
 
-for x in range(columns):
-    for y in range(rows):
-        grid[x][y].set_neighbours()
+
+initialize_grid()
 
 start_box = grid[0][0]
 start_box.start = True
@@ -86,34 +83,32 @@ queue.append(start_box)
 
 def main():
     start_search = False
-
     target_box_set = False
     target_box = None
-
+        
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.MOUSEMOTION:
-                mouse_x = pygame.mouse.get_pos()[0]
-                mouse_y = pygame.mouse.get_pos()[1]
-                x = mouse_x // box_width
-                y = mouse_y // box_height
+            # Gestione delle coordinate del mouse
+            mouse_x = pygame.mouse.get_pos()[0]
+            mouse_y = pygame.mouse.get_pos()[1]
+            x = mouse_x // box_width
+            y = mouse_y // box_height
 
+            # Sezione per la gestione del movimento del mouse
+            if event.type == pygame.MOUSEMOTION:
                 if 0 <= x < columns and 0 <= y < rows and event.buttons[0]:
                     grid[x][y].wall = True
 
+            # Sezione per la gestione del click del mouse
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x = pygame.mouse.get_pos()[0]
-                mouse_y = pygame.mouse.get_pos()[1]
-                x = mouse_x // box_width
-                y = mouse_y // box_height
-
                 if 0 <= x < columns and 0 <= y < rows and event.button == 3 and not target_box_set:
                     target_box = grid[x][y]
                     target_box.target = True
+                    target_box.wall = False
                     target_box_set = True
                 
                 if 0 <= x < columns and 0 <= y < rows and event.button == 1:
@@ -121,15 +116,22 @@ def main():
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and target_box_set:
                 start_search = True
+            
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r and not start_search:
+                initialize_grid()
+                start_box = grid[0][0]
+                start_box.start = True
+                start_box.visited = True
+                queue.clear()
+                queue.append(start_box)
+                target_box_set = False
 
         if start_search:
-            found_target = bfs(queue, path, start_box, target_box)
-            if found_target:
+            if bfs(queue, path, start_box, target_box):
                 start_search = False
 
         window.fill((0, 0, 0))
-        update_grid()
+        update_cell_color()
         pygame.display.flip()
-
 
 main()
