@@ -82,6 +82,7 @@ start_box.visited = True
 queue.append(start_box)
 
 def main():
+    global start_box
     start_search = False
     target_box_set = False
     target_box = None
